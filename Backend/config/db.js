@@ -1,19 +1,16 @@
 const mongoose = require("mongoose");
 
-let MONGO_DB = {
-  production: { url: process.env.MONGODB_PROD_URL, type: "Atlas" },
-  development: { url: process.env.MONGODB_DEV_URL, type: "Compass" },
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_PROD_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("✅ MongoDB Connected");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error.message);
+    process.exit(1);
+  }
 };
 
-let environment = process.env.ENVIRONMENT;
-
-mongoose
-  .connect(MONGO_DB[environment].url)
-  .then(() => {
-    console.log("Connected to Mongo DB", MONGO_DB[environment].type);
-  })
-  .catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-module.exports = mongoose.connection;
+module.exports = connectDB;

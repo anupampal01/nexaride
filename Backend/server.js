@@ -20,16 +20,7 @@ const keepServerRunning = require("./services/active.service");
 const dbStream = require("./services/logging.service");
 require("./config/db");
 const PORT = process.env.PORT || 4000;
-
-if (process.env.ENVIRONMENT == "production") {
-  app.use(
-    morgan(":method :url :status :response-time ms - :res[content-length]", {
-      stream: dbStream,
-    })
-  );
-} else {
-  app.use(morgan("dev"));
-}
+connectDB();
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
