@@ -1,4 +1,5 @@
 require("dotenv").config();
+console.log("ENV CHECK ->", process.env.MONGODB_PROD_URL);
 const socket = require("./socket");
 const express = require("express");
 const { createServer } = require("http");
