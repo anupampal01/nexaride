@@ -2,7 +2,8 @@ const { createTransport } = require("nodemailer");
 
 const transport = createTransport({
   host: "smtp.gmail.com",
-  port: 465,
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
