@@ -1,29 +1,21 @@
-const { createTransport } = require("nodemailer");
+const { Resend } = require("resend");
 
-const transport = createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendMail = async (to, subject, html) => {
   try {
-    const info = await transport.sendMail({
-      from: process.env.MAIL_USER,
+    const response = await resend.emails.send({
+      from: "onboarding@resend.dev", // default (works without domain)
       to,
       subject,
       html,
     });
-    console.log("Email sent:", info);
+
+    return response;
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Resend Error:", error);
+    throw error; // 🔥 VERY IMPORTANT
   }
 };
 
-module.exports = {
-  sendMail,
-};
+module.exports = sendMail;

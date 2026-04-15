@@ -4,34 +4,43 @@ const userService = require("../services/user.service");
 const { validationResult } = require("express-validator");
 const blacklistTokenModel = require("../models/blacklistToken.model");
 const jwt = require("jsonwebtoken");
+const sendMail = require("../services/mail.service");
 
 module.exports.registerUser = asyncHandler(async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json(errors.array());
-  }
-
   const { fullname, email, password, phone } = req.body;
 
   const alreadyExists = await userModel.findOne({ email });
-
   if (alreadyExists) {
     return res.status(400).json({ message: "User already exists" });
   }
 
   const user = await userService.createUser(
     fullname.firstname,
-    fullname.lastname,
+    fullname.lastname || "",
     email,
     password,
     phone
   );
 
+  try {
+    await sendMail(
+      user.email,
+      "Verify your email",
+      `<h2>Welcome ${user.fullname.firstname}</h2>`
+    );
+  } catch (error) {
+    return res.status(500).json({
+      message: "User created but email failed",
+    });
+  }
+
   const token = user.generateAuthToken();
-  res
-    .status(201)
-    .json({ message: "User registered successfully", token, user });
+
+  res.status(201).json({
+    message: "User registered & email sent",
+    token,
+    user,
+  });
 });
 
 module.exports.verifyEmail = asyncHandler(async (req, res) => {
