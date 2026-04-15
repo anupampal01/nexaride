@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 
-const { sendMail } = require("../services/mail.service");
+const sendMail = require("../services/mail.service");
 let { fillTemplate } = require("../templates/mail.template");
 
 const captainModel = require("../models/captain.model");

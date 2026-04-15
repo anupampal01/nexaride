@@ -23,11 +23,21 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
   );
 
   try {
-    await sendMail(
-      user.email,
-      "Verify your email",
-      `<h2>Welcome ${user.fullname.firstname}</h2>`
-    );
+    const token = jwt.sign(
+  { id: user._id, purpose: "email-verification" },
+  process.env.JWT_SECRET,
+  { expiresIn: "15m" }
+);
+
+const link = `${process.env.CLIENT_URL}/verify-email?token=${token}&type=user`;
+
+await sendMail(
+  user.email,
+  "Verify your email",
+  `<h2>Welcome ${user.fullname.firstname}</h2>
+   <p>Click below to verify:</p>
+   <a href="${link}">Verify Email</a>`
+);
   } catch (error) {
     return res.status(500).json({
       message: "User created but email failed",
