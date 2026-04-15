@@ -14,13 +14,6 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 
   const { fullname, email, password, phone } = req.body;
 
-  // 🛑 SAFETY CHECK (IMPORTANT)
-  if (!fullname || !fullname.firstname) {
-    return res.status(400).json({
-      message: "Fullname with firstname is required",
-    });
-  }
-
   const alreadyExists = await userModel.findOne({ email });
 
   if (alreadyExists) {
@@ -29,19 +22,16 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 
   const user = await userService.createUser(
     fullname.firstname,
-    fullname.lastname || "",
+    fullname.lastname,
     email,
     password,
     phone
   );
 
   const token = user.generateAuthToken();
-
-  res.status(201).json({
-    message: "User registered successfully",
-    token,
-    user,
-  });
+  res
+    .status(201)
+    .json({ message: "User registered successfully", token, user });
 });
 
 module.exports.verifyEmail = asyncHandler(async (req, res) => {
